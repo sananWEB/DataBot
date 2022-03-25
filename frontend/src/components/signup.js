@@ -12,10 +12,15 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { useNavigate, Link } from "react-router-dom";
-import { Radio, FormControl, FormLabel, RadioGroup ,Snackbar } from "@material-ui/core";
-import MuiAlert from '@material-ui/lab/Alert'
-
+import { useNavigate, Link, Navigate } from "react-router-dom";
+import {
+  Radio,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  Snackbar,
+} from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -58,29 +63,34 @@ export default function SignUp() {
   };
 
   let history = useNavigate();
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      history("/homepage");
+    }
+  }, []);
   const submit = (e) => {
     e.preventDefault();
 
-    if (data.password != data.cpassword) {
+    if (data.password !== data.cpassword) {
       setmsg("Password Is Not Match");
-      console.log("Password Is Not Match")
+      console.log("Password Is Not Match");
       setopen(true);
     } else {
-     // console.log(data);
+      // console.log(data);
 
-      axios
-        .post("/userregistration", data)
-        .then((res) => {
-          setmsg(res.data);
-          //console.log(res.data)
-          setopen(true);
-          if (res.data == "User Registered") {
-            history("/");
-          }
-        });
+      axios.post("/userregistration", data).then((res) => {
+        setmsg(res.data);
+        //console.log(res.data)
+        setopen(true);
+        if (res.data == "User Registered") {
+          history("/");
+        }
+      });
     }
   };
-
+  if (localStorage.getItem("user")) {
+    return <Navigate to="/homepage" replace />;
+  }
   const handleClick = () => {
     setopen(false);
   };
@@ -209,16 +219,16 @@ export default function SignUp() {
         </form>
       </div>
 
-      <Snackbar open={open} autoHideDuration={4000} onClose={handleClick} >
-        {msg=="User Registered"?
-        <MuiAlert  severity="success" elevation={6} variant="filled">
-        {msg}
-        </MuiAlert>:
-          <MuiAlert  severity="error" elevation={6} variant="filled">
-          {msg}
+      <Snackbar open={open} autoHideDuration={4000} onClose={handleClick}>
+        {msg == "User Registered" ? (
+          <MuiAlert severity="success" elevation={6} variant="filled">
+            {msg}
           </MuiAlert>
-      }
-    
+        ) : (
+          <MuiAlert severity="error" elevation={6} variant="filled">
+            {msg}
+          </MuiAlert>
+        )}
       </Snackbar>
     </Container>
   );

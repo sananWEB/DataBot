@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -7,13 +7,13 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import MuiAlert from '@material-ui/lab/Alert'
-import {Snackbar } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
+import { Snackbar } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import axios from "axios"
+import axios from "axios";
 import {
   BrowserRouter,
   Route,
@@ -64,40 +64,36 @@ export default function SignIn() {
       [e.target.name]: e.target.value,
     });
   };
-  const history=useNavigate()
+  const history = useNavigate();
   const submit = (e) => {
     e.preventDefault();
 
     console.log(data);
 
-    axios
-      .post("/signin", data)
-      .then((res) => {
-
-
-        console.log(res.data.msg)
+    axios.post("/signin", data).then((res) => {
+      console.log(res.data.msg);
+      setmsg(res.data.msg);
+      setopen(true);
+      if (res.data.msg === "log In Successful") {
+        localStorage.setItem("user",JSON.stringify(res.data.user))
         setmsg(res.data.msg);
-          setopen(true);
-        if (res.data.msg == "log In Successful") {
-          setmsg(res.data.msg);
-          setopen(true);
-          history("/homepage");
-        } else {
-         
-          
-          setmsg(res.data.msg);
-          setopen(true);
-        
-        }
-      });
+        setopen(true);
+        history("/homepage");
+      } else {
+        setmsg(res.data.msg);
+        setopen(true);
+      }
+    });
   };
 
   const handleClick = () => {
     setopen(false);
   };
-
-
-  
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+     history("/homepage")
+    }
+  },[]);
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -160,41 +156,29 @@ export default function SignIn() {
         </form>
       </div>
 
-      <Snackbar open={open} autoHideDuration={3000} onClose={handleClick} >
-
-
-{(()=>{
-
-if(msg=="Incorrent Password"){
-  return(
-    <MuiAlert  severity="error" elevation={6} variant="filled">
-    {msg}
-    </MuiAlert>
-  )
-
-}
-else if(msg=="This Email is not registered"){
-  return(
-    <MuiAlert  severity="error" elevation={6} variant="filled">
-    {msg}
-    </MuiAlert>
-  )
-}
-
-else{
-return(
-  <MuiAlert  severity="success" elevation={6} variant="filled">
-{msg}
-</MuiAlert>
-)
-}
-})()}
-
- 
-
-
-
-</Snackbar>
+      <Snackbar open={open} autoHideDuration={3000} onClose={handleClick}>
+        {(() => {
+          if (msg === "Incorrent Password") {
+            return (
+              <MuiAlert severity="error" elevation={6} variant="filled">
+                {msg}
+              </MuiAlert>
+            );
+          } else if (msg === "This Email is not registered") {
+            return (
+              <MuiAlert severity="error" elevation={6} variant="filled">
+                {msg}
+              </MuiAlert>
+            );
+          } else {
+            return (
+              <MuiAlert severity="success" elevation={6} variant="filled">
+                {msg}
+              </MuiAlert>
+            );
+          }
+        })()}
+      </Snackbar>
     </Container>
   );
 }
