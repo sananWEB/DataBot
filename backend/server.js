@@ -5,8 +5,8 @@ const cors = require("cors");
 const mongo = require("mongoose");
 require("dotenv").config();
 //import registration model
-const registrationSchema = require('./models/registration')
-const productSchema = require('./models/product')
+const registrationSchema = require("./models/registration");
+const productSchema = require("./models/product");
 // Database connection
 mongo
   .connect(process.env.MONGODB)
@@ -41,24 +41,18 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get("/getproducts", async(req, res) => {
-
-  var a= await productSchema.find();
+app.get("/getproducts", async (req, res) => {
+  var a = await productSchema.find();
   res.send(a);
 });
-
 
 app.get("/userregistration/:username", (req, res) => {
   res.send({ name: req.params.username });
 });
 
-
-
-
-
 //signup
 app.post("/userregistration", async (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   //res.send(req.body)
 
   const data1 = await registrationSchema.find({ email: req.body.email });
@@ -89,6 +83,38 @@ app.post("/userregistration", async (req, res) => {
 
 //sigin
 
+// app.post("/signin", async (req, res) => {
+//   try {
+//     const user = await registrationSchema.findOne(
+//       {
+//         email: req.body.email,
+//         password: req.body.password,
+//       },
+//       "email"
+//     );
+//     if (!user) return res.status(404).send({ msg: "Invalid credentials" });
+//     res.send({ user, msg: "log In Successful" });
+//   } catch (error) {
+//     res.status(500).send({ message: error.message });
+//   }
+// });
+
+//////////////////////////
+// app.post("/signin", async (req, res) => {
+//   // console.log(req.body)
+//   const data1 = await registrationSchema.find({ email: req.body.email });
+
+//   if (data1.length == 0) {
+//     res.send({msg:"This Email is not registered"});
+//   } else if (data1[0].password != req.body.password) {
+//     res.send({ msg: "Incorrent Password" });
+//   } else {
+//     res.send({
+//       msg: "log In Successful",
+//       login: true,
+//     });
+//   }
+// });
 app.post("/signin", async (req, res) => {
   // console.log(req.body)
   const data1 = await registrationSchema.find({ email: req.body.email });
@@ -99,11 +125,13 @@ app.post("/signin", async (req, res) => {
     res.send({ msg: "Incorrent Password" });
   } else {
     res.send({
+      user:data1[0],
       msg: "log In Successful",
-      login: true,
+     
     });
   }
 });
+
 
 //update user
 app.post("/updateuser", async (req, res) => {
@@ -120,11 +148,6 @@ app.post("/updateuser", async (req, res) => {
       res.send("there is some thing wrong");
     });
 });
-
-
-
-
-
 
 app.listen(process.env.PORT || 5000, () => {
   console.log("server is ON!");
