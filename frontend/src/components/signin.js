@@ -65,10 +65,16 @@ export default function SignIn() {
     });
   };
   const history = useNavigate();
+
+  axios.get("/getproducts").then((res)=>{console.log(res.data);});
   const submit = (e) => {
     e.preventDefault();
 
     console.log(data);
+
+
+
+
 
     axios.post("/signin", data).then((res) => {
       console.log(res.data.msg);
